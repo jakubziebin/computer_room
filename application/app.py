@@ -13,15 +13,30 @@ class ComputerRoomApp(App):
         margin-right: 2;
     }
 
-    #buttons-container {
+    Static {
+        text-align: center;
+        text-style: bold;
+        width: 1fr;
+    }
+
+    Horizontal {
         align: center top;
     }
 
     #show-mode {
-        text-align: center;
-        width: 1fr;
         background: rgb(20, 30, 144);
-        text-style: bold;
+    }
+
+    #inside-temperature-display {
+        background: rgb(32, 13, 54);
+    }
+
+     #inside-co2-display {
+        background: rgb(78, 53, 123);
+    }
+
+    #inside-humidity-display {
+        background: rgb(155, 32, 33);
     }
     """
 
@@ -31,6 +46,12 @@ class ComputerRoomApp(App):
         with Horizontal(id="buttons-container"):
             yield Button("Auto", id="auto-mode-button")
             yield Button("Manual", id="manual-mode-button")
+        with Horizontal(id="measaurment-data-container"):
+            yield Static(
+                "Current temperature inside: 24.0 °C", id="inside-temperature-display"
+            )
+            yield Static("Current C02 value inside: 330 ppm", id="inside-co2-display")
+            yield Static("Current humidity inside: 50 %", id="inside-humidity-display")
         yield Footer()
 
     @on(Button.Pressed)
