@@ -4,8 +4,10 @@ from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Static, Button
+from textual.reactive import var
 
 from measuremnts_container import Measurements
+from measurements_functions.control_file import calculate_window_opening
 
 
 class ManualMode(Vertical):
@@ -36,6 +38,16 @@ class ManualMode(Vertical):
 
 
 class ComputerRoomApp(App):
+    mode_auto: bool = var(False)
+    """mode_auto is var to detect mode that is currently set"""
+
+    window_position: int = var(0)
+    """
+    window_position = 0 -> close
+    window_position = 1 -> open in mode 1
+    etc.
+    """
+
     DEFAULT_CSS = """
     Button {
         margin-left: 2;
@@ -74,16 +86,32 @@ class ComputerRoomApp(App):
         yield self.__manual_container
         yield Footer()
 
+    def on_mount(self) -> None:
+        self.manual_mode()
+        self.set_interval(30, self.manual_mode)
+
     @on(Button.Pressed)
     def change_mode(self, event: Button.Pressed) -> None:
         pretty_widget = self.query_one("#show-mode")
         if event.button.id == "auto-mode-button":
+            self.mode_auto = True
             pretty_widget.update("Mode: auto")
             self.__manual_container.display = False
             return
+        self.mode_auto = False
         pretty_widget.update("Mode: manual")
         self.__manual_container.display = True
         return
+
+    def manual_mode(self) -> None:
+        """Method to perform automation window openning"""
+        if not self.mode_auto:
+            return
+
+        mode_to_execute = calculate_window_opening()
+        if not mode_to_execute[0]:
+            if self.window_position == 0:
+                return
 
 
 if __name__ == "__main__":
