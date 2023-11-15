@@ -5,6 +5,8 @@ from textual.containers import Horizontal, Vertical
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Static, Button
 
+from measuremnts_container import Measurements
+
 
 class ManualMode(Vertical):
     DEFAULT_CSS = """
@@ -53,18 +55,6 @@ class ComputerRoomApp(App):
     #show-mode {
         background: rgb(20, 30, 144);
     }
-
-    #inside-temperature-display {
-        background: rgb(32, 13, 54);
-    }
-
-     #inside-co2-display {
-        background: rgb(78, 53, 123);
-    }
-
-    #inside-humidity-display {
-        background: rgb(155, 32, 33);
-    }
     """
 
     def __init__(self) -> None:
@@ -72,18 +62,15 @@ class ComputerRoomApp(App):
         self.__manual_container = ManualMode()
         self.__manual_container.display = False
 
+        self.__measurements_container = Measurements()
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Mode: auto", id="show-mode")
         with Horizontal(id="buttons-container"):
             yield Button("Auto", id="auto-mode-button")
             yield Button("Manual", id="manual-mode-button")
-        with Horizontal(id="measaurment-data-container"):
-            yield Static(
-                "Current temperature inside: 24.0 °C", id="inside-temperature-display"
-            )
-            yield Static("Current C02 value inside: 330 ppm", id="inside-co2-display")
-            yield Static("Current humidity inside: 50 %", id="inside-humidity-display")
+        yield self.__measurements_container
         yield self.__manual_container
         yield Footer()
 
