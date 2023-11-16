@@ -59,10 +59,12 @@ class Measurements(Horizontal):
         self.__dht_values = read_dht_values(4, 17)
 
         self.__temperature = (
-            self.__dht_values["temperature_4"] + self.__dht_values["temperature_17"]
+            self.__dht_values.get("temperature_4", 20)
+            + self.__dht_values.get("temperature_17", 20)
         ) // 2
         self.__humidity = (
-            self.__dht_values["humidity_4"] + self.__dht_values["humidity_17"]
+            self.__dht_values.get("humidity_4", 30)
+            + self.__dht_values.get("humidity_17", 30)
         ) // 2
 
     def compose(self) -> ComposeResult:
