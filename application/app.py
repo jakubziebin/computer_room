@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Final
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, Vertical, Container
 from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Static, Button
 from textual.reactive import var
@@ -68,7 +68,9 @@ class ModeChoose(Horizontal):
         return
 
 
-class ComputerRoomApp(App):
+class ControlWindowPosition(Container):
+    """Container that control and displays position of the window"""
+
     window_position: int = var(0)
     """
     window_position = 0 -> close
@@ -76,10 +78,23 @@ class ComputerRoomApp(App):
     etc.
     """
 
+    def compose(self) -> ComposeResult:
+        yield Static(f"Window position: {self.window_position}")
+
+
+class ComputerRoomApp(App):
     DEFAULT_CSS = """
     Button {
         margin-left: 2;
         margin-right: 2;
+    }
+
+    ControlWindowPosition {
+        margin-top: 1;
+        margin-bottom: 1;
+        width: 1fr;
+        background: rgb(56, 32, 21);
+        height: 1;
     }
 
     Static {
@@ -104,9 +119,11 @@ class ComputerRoomApp(App):
 
         self.__measurements_container = Measurements()
         self.__mode_choose_container = ModeChoose()
+        self.__window_position_container = ControlWindowPosition()
 
     def compose(self) -> ComposeResult:
         yield Header()
+        yield self.__window_position_container
         yield Static("Mode: auto", id="show-mode")
         yield self.__mode_choose_container
         yield self.__measurements_container
