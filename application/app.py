@@ -35,10 +35,10 @@ class ManualMode(Vertical):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="auto-mode-choose"):
-            yield Button("Close", id="0")
-            yield Button("Mode 1", id="1")
-            yield Button("Mode 2", id="2")
-            yield Button("Mode 3", id="3")
+            yield Button("Close", id="mode-0")
+            yield Button("Mode 1", id="mode-1")
+            yield Button("Mode 2", id="mode-2")
+            yield Button("Mode 3", id="mode-3")
         yield Static("Mode 1 -> opens window for 3 seconds", id="mode-1-static")
         yield Static("Mode 2 -> opens window for 6 seconds", id="mode-2-static")
         yield Static("Mode 3 -> opens window for 9 seconds", id="mode-3-static")
@@ -48,7 +48,7 @@ class ManualMode(Vertical):
         return
 
 
-"""        mode_to_execute = int(event.button.id)
+"""        mode_to_execute = int(event.button.id.split("-")[1])
         control_window_container = self.app.query_one(ControlWindowPosition)
 
         if control_window_container.window_position == mode_to_execute:
