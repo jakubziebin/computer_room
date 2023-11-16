@@ -4,12 +4,14 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Static
 
+from measurements_functions.measurement_temperature_humidity import read_dht_values
+
 
 class Measurement(Horizontal):
     """This class displays one measured value"""
 
     def __init__(self, value: float, *, name_of_value: str, unit: str) -> None:
-        super().__init__()
+        super().__init__(id=f"{name_of_value}-container")
         self.__value = value
         self.__name_of_value = name_of_value
         self.__unit = unit
@@ -52,18 +54,49 @@ class Measurements(Horizontal):
     >>> co2_level = data.co2
     """
 
+    def __init__(self):
+        super().__init__()
+        self.__dht_values = read_dht_values(4, 17)
+
+        self.__temperature = (
+            self.__dht_values["temperature_4"] + self.__dht_values["temperature_17"]
+        ) // 2
+        self.__humidity = (
+            self.__dht_values["humidity_4"] + self.__dht_values["humidity_17"]
+        ) // 2
+
     def compose(self) -> ComposeResult:
         yield Measurement(self.temperature, name_of_value="temperature", unit="°C")
         yield Measurement(self.humidity, name_of_value="humidity", unit="%")
         yield Measurement(self.c02, name_of_value="co2", unit="ppm")
 
-    @property
-    def temperature(self) -> float:
-        return 24.0
+    def on_mount(self) -> None:
+        self.set_interval(2, self.update_displaying_values)
+
+    def update_displaying_values(self) -> None:
+        self.query("*").remove()
+
+        self.__dht_values = read_dht_values(4, 17)
+        self.__temperature = (
+            self.__dht_values["temperature_4"] + self.__dht_values["temperature_17"]
+        ) // 2
+        self.__humidity = (
+            self.__dht_values["humidity_4"] + self.__dht_values["humidity_17"]
+        ) // 2
+
+        self.mount(
+            Measurement(self.temperature, name_of_value="temperature", unit="°C")
+        )
+        self.mount(Measurement(self.humidity, name_of_value="humidity", unit="%"))
+        self.mount(Measurement(self.c02, name_of_value="co2", unit="ppm"))
 
     @property
-    def humidity(self) -> float:
-        return 50.0
+    def temperature(self) -> int:
+        return self.__temperature
+
+    @property
+    def humidity(self) -> int:
+        return self.__humidity
 
     @property
     def c02(self) -> float:
