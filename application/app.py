@@ -10,8 +10,8 @@ from textual.reactive import var
 
 from measuremnts_container import Measurements
 
-from control_functions.control_file import calculate_window_opening
-from control_functions.window_functions import open_window, close_window
+"""from control_functions.control_file import calculate_window_opening
+from control_functions.window_functions import open_window, close_window"""
 
 OPEN_WINDOW_PIN: Final[int] = 20
 CLOSE_WINDOW_PIN: Final[int] = 21
@@ -35,13 +35,55 @@ class ManualMode(Vertical):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="auto-mode-choose"):
-            yield Button("Close", id="close-button")
-            yield Button("Mode 1", id="mode1-button")
-            yield Button("Mode 2", id="mode2-button")
-            yield Button("Mode 3", id="mode3-button")
+            yield Button("Close", id="0")
+            yield Button("Mode 1", id="1")
+            yield Button("Mode 2", id="2")
+            yield Button("Mode 3", id="3")
         yield Static("Mode 1 -> opens window for 3 seconds", id="mode-1-static")
         yield Static("Mode 2 -> opens window for 6 seconds", id="mode-2-static")
         yield Static("Mode 3 -> opens window for 9 seconds", id="mode-3-static")
+
+    @on(Button.Pressed)
+    def move_window(self, event: Button.Pressed) -> None:
+        return
+
+
+"""        mode_to_execute = int(event.button.id)
+        control_window_container = self.app.query_one(ControlWindowPosition)
+
+        if control_window_container.window_position == mode_to_execute:
+            self.notify("The window is already in this state")
+            return
+
+        if mode_to_execute == 0:
+            close_window(
+                pin=CLOSE_WINDOW_PIN,
+                closing_time=control_window_container.window_position * 3,
+            )
+            control_window_container.window_position -= (
+                control_window_container.window_position
+            )
+            return
+
+        if mode_to_execute > control_window_container.window_position:
+            open_window(
+                pin=OPEN_WINDOW_PIN,
+                mode=mode_to_execute - control_window_container.window_position,
+            )
+            control_window_container.window_position = (
+                mode_to_execute - control_window_container.window_position
+            )
+            return
+
+        else:
+            close_window(
+                pin=CLOSE_WINDOW_PIN,
+                closing_time=(
+                    control_window_container.window_position - mode_to_execute
+                )
+                * 3,
+            )
+            control_window_container.window_position = 0"""
 
 
 class ModeChoose(Horizontal):
@@ -139,6 +181,8 @@ class ComputerRoomApp(App):
         if not self.__mode_choose_container.mode_auto:
             return
 
+
+"""
         mode_to_execute = calculate_window_opening()
 
         if mode_to_execute[1] == self.window_position:
@@ -168,7 +212,7 @@ class ComputerRoomApp(App):
                 pin=CLOSE_WINDOW_PIN,
                 closing_time=(self.window_position - mode_to_execute[1]) * 3,
             )
-            self.__window_position_container.window_position = 0
+            self.__window_position_container.window_position = 0"""
 
 
 if __name__ == "__main__":
