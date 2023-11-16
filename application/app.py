@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Final
+
 from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.app import App, ComposeResult
@@ -7,7 +9,11 @@ from textual.widgets import Header, Footer, Static, Button
 from textual.reactive import var
 
 from measuremnts_container import Measurements
-from measurements_functions.control_file import calculate_window_opening
+from control_functions.control_file import calculate_window_opening
+from control_functions.window_functions import open_window, close_window
+
+OPEN_WINDOW_PIN: Final[int] = 20
+CLOSE_WINDOW_PIN: Final[int] = 21
 
 
 class ManualMode(Vertical):
@@ -109,9 +115,24 @@ class ComputerRoomApp(App):
             return
 
         mode_to_execute = calculate_window_opening()
+
+        if mode_to_execute[1] == self.window_position:
+            return
+
         if not mode_to_execute[0]:
-            if self.window_position == 0:
-                return
+            close_window(pin=CLOSE_WINDOW_PIN, closing_time=self.window_position * 3)
+            return
+
+        if mode_to_execute[1] > self.window_position:
+            open_window(
+                pin=OPEN_WINDOW_PIN, mode=mode_to_execute[1] - self.window_position
+            )
+
+        else:
+            close_window(
+                pin=CLOSE_WINDOW_PIN,
+                closing_time=(self.window_position - mode_to_execute[1]) * 3,
+            )
 
 
 if __name__ == "__main__":
