@@ -10,8 +10,8 @@ from textual.reactive import var
 
 from measuremnts_container import Measurements
 
-"""from control_functions.control_file import calculate_window_opening
-from control_functions.window_functions import open_window, close_window"""
+from control_functions.control_file import calculate_window_opening
+from control_functions.window_functions import open_window, close_window
 
 OPEN_WINDOW_PIN: Final[int] = 20
 CLOSE_WINDOW_PIN: Final[int] = 21
@@ -139,26 +139,36 @@ class ComputerRoomApp(App):
         if not self.__mode_choose_container.mode_auto:
             return
 
-        """mode_to_execute = calculate_window_opening()
+        mode_to_execute = calculate_window_opening()
 
         if mode_to_execute[1] == self.window_position:
             return
 
         if not mode_to_execute[0]:
-            close_window(pin=CLOSE_WINDOW_PIN, closing_time=self.window_position * 3)
+            close_window(
+                pin=CLOSE_WINDOW_PIN,
+                closing_time=self.__window_position_container.window_position * 3,
+            )
+            self.__window_position_container.window_position -= (
+                self.__window_position_container.window_position
+            )
             return
 
         if mode_to_execute[1] > self.window_position:
             open_window(
                 pin=OPEN_WINDOW_PIN, mode=mode_to_execute[1] - self.window_position
             )
+            self.__window_position_container.window_position = (
+                mode_to_execute[1] - self.__window_position_container.window_position
+            )
+            return
 
         else:
             close_window(
                 pin=CLOSE_WINDOW_PIN,
                 closing_time=(self.window_position - mode_to_execute[1]) * 3,
             )
-    """
+            self.__window_position_container.window_position = 0
 
 
 if __name__ == "__main__":
