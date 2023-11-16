@@ -9,8 +9,9 @@ from textual.widgets import Header, Footer, Static, Button
 from textual.reactive import var
 
 from measuremnts_container import Measurements
-from control_functions.control_file import calculate_window_opening
-from control_functions.window_functions import open_window, close_window
+
+"""from control_functions.control_file import calculate_window_opening
+from control_functions.window_functions import open_window, close_window"""
 
 OPEN_WINDOW_PIN: Final[int] = 20
 CLOSE_WINDOW_PIN: Final[int] = 21
@@ -43,10 +44,31 @@ class ManualMode(Vertical):
         yield Static("Mode 3 -> opens window for 9 seconds", id="mode-3-static")
 
 
-class ComputerRoomApp(App):
+class ModeChoose(Horizontal):
     mode_auto: bool = var(False)
     """mode_auto is var to detect mode that is currently set"""
 
+    def compose(self) -> ComposeResult:
+        yield Button("Auto", id="auto-mode-button")
+        yield Button("Manual", id="manual-mode-button")
+
+    @on(Button.Pressed)
+    def change_mode(self, event: Button.Pressed) -> None:
+        show_mode_static = self.app.query_one("#show-mode")
+        manual_container = self.app.query_one(ManualMode)
+
+        if event.button.id == "auto-mode-button":
+            self.mode_auto = True
+            show_mode_static.update("Mode: auto")
+            manual_container.display = False
+            return
+        self.mode_auto = False
+        show_mode_static.update("Mode: manual")
+        manual_container.display = True
+        return
+
+
+class ComputerRoomApp(App):
     window_position: int = var(0)
     """
     window_position = 0 -> close
@@ -81,13 +103,12 @@ class ComputerRoomApp(App):
         self.__manual_container.display = False
 
         self.__measurements_container = Measurements()
+        self.__mode_choose_container = ModeChoose()
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("Mode: auto", id="show-mode")
-        with Horizontal(id="buttons-container"):
-            yield Button("Auto", id="auto-mode-button")
-            yield Button("Manual", id="manual-mode-button")
+        yield self.__mode_choose_container
         yield self.__measurements_container
         yield self.__manual_container
         yield Footer()
@@ -96,25 +117,12 @@ class ComputerRoomApp(App):
         self.manual_mode()
         self.set_interval(30, self.manual_mode)
 
-    @on(Button.Pressed)
-    def change_mode(self, event: Button.Pressed) -> None:
-        pretty_widget = self.query_one("#show-mode")
-        if event.button.id == "auto-mode-button":
-            self.mode_auto = True
-            pretty_widget.update("Mode: auto")
-            self.__manual_container.display = False
-            return
-        self.mode_auto = False
-        pretty_widget.update("Mode: manual")
-        self.__manual_container.display = True
-        return
-
     def manual_mode(self) -> None:
         """Method to perform automation window openning"""
-        if not self.mode_auto:
+        if not self.__mode_choose_container.mode_auto:
             return
 
-        mode_to_execute = calculate_window_opening()
+        """mode_to_execute = calculate_window_opening()
 
         if mode_to_execute[1] == self.window_position:
             return
@@ -133,6 +141,7 @@ class ComputerRoomApp(App):
                 pin=CLOSE_WINDOW_PIN,
                 closing_time=(self.window_position - mode_to_execute[1]) * 3,
             )
+    """
 
 
 if __name__ == "__main__":
