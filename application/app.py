@@ -5,7 +5,6 @@ from typing import Final
 from textual import on
 from textual.containers import Horizontal, Vertical, Container
 from textual.app import App, ComposeResult
-from textual.widget import Widget
 from textual.widgets import Header, Footer, Static, Button
 from textual.reactive import var
 
@@ -19,29 +18,18 @@ CLOSE_WINDOW_PIN: Final[int] = 21
 
 
 class ManualMode(Vertical):
-    def __init__(
-        self,
-        *children: Widget,
-        name: str | None = None,
-        id: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
-    ) -> None:
-        super().__init__(
-            *children, name=name, id=id, classes=classes, disabled=disabled
-        )
-        self.__test = Static()
+    def __init__(self, id_: str) -> None:
+        super().__init__(id=id_)
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="auto-mode-choose"):
             yield Button("Close", id="mode-0")
             yield Button("Open", id="mode-1")
-        yield self.__test
 
     @on(Button.Pressed)
     def move_window(self, event: Button.Pressed) -> None:
         mode_to_execute = int(event.button.id.split("-")[1])
-        control_window_container = self.app.query_one(ControlWindowPosition)
+        control_window_container = self.app.query_one("#control-window-container")
 
         if control_window_container.window_position == mode_to_execute:
             return
@@ -102,17 +90,8 @@ class ControlWindowPosition(Container):
     window_position = 1 -> open
     """
 
-    def __init__(
-        self,
-        *children: Widget,
-        name: str | None = None,
-        id: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
-    ) -> None:
-        super().__init__(
-            *children, name=name, id=id, classes=classes, disabled=disabled
-        )
+    def __init__(self, id_: str) -> None:
+        super().__init__(id=id_)
         self.__mode_display = Static(f"Window position: {self.window_position}")
 
     def compose(self) -> ComposeResult:
@@ -154,12 +133,14 @@ class ComputerRoomApp(App):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__manual_container = ManualMode()
+        self.__manual_container = ManualMode(id_="manual-mode-container")
         self.__manual_container.display = False
 
         self.__measurements_container = Measurements()
         self.__mode_choose_container = ModeChoose()
-        self.__window_position_container = ControlWindowPosition()
+        self.__window_position_container = ControlWindowPosition(
+            id_="control-window-contaienr"
+        )
 
     def compose(self) -> ComposeResult:
         yield Header()
