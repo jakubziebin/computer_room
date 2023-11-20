@@ -4,34 +4,23 @@ from time import sleep
 import RPi.GPIO as GPIO
 
 
-def open_window(mode: int, pin: int) -> None:
+def open_window(pin: int, openning_time: int) -> None:
     """
     Parameters
     -------------
-    mode: put 1 to open window for 9 seconds, or put 2 to open window for 18 seconds.
     pin: the GPIO pin number that is connected to the motor driver.d
     """
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(pin, GPIO.OUT)
 
-    if mode == 1:
+    if isinstance(openning_time, int):
         GPIO.output(pin, GPIO.HIGH)
-        sleep(3)
-        GPIO.output(pin, GPIO.LOW)
-        GPIO.cleanup()
-    elif mode == 2:
-        GPIO.output(pin, GPIO.HIGH)
-        sleep(6)
-        GPIO.output(pin, GPIO.LOW)
-        GPIO.cleanup()
-    elif mode == 3:
-        GPIO.output(pin, GPIO.HIGH)
-        sleep(9)
+        sleep(openning_time)
         GPIO.output(pin, GPIO.LOW)
         GPIO.cleanup()
     else:
         GPIO.cleanup()
-        raise ValueError("Invalid mode number ! You had to selected 1 or 2 !")
+        raise ValueError("Invalid time number !")
 
 
 def close_window(pin: int, closing_time: int) -> None:

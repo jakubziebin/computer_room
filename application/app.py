@@ -10,45 +10,22 @@ from textual.reactive import var
 
 from measuremnts_container import Measurements
 
-"""from control_functions.control_file import calculate_window_opening
-from control_functions.window_functions import open_window, close_window"""
+from control_functions.control_file import calculate_window_opening
+from control_functions.window_functions import open_window, close_window
 
 OPEN_WINDOW_PIN: Final[int] = 20
 CLOSE_WINDOW_PIN: Final[int] = 21
 
 
 class ManualMode(Vertical):
-    DEFAULT_CSS = """
-    #mode-1-static {
-        background: rgb(150, 120, 251);
-    }
-
-    #mode-2-static {
-        background: rgb(100, 91, 211);
-    }
-
-    #mode-3-static {
-        background: rgb(92, 10, 200);
-    }
-
-    """
-
     def compose(self) -> ComposeResult:
         with Horizontal(id="auto-mode-choose"):
             yield Button("Close", id="mode-0")
-            yield Button("Mode 1", id="mode-1")
-            yield Button("Mode 2", id="mode-2")
-            yield Button("Mode 3", id="mode-3")
-        yield Static("Mode 1 -> opens window for 3 seconds", id="mode-1-static")
-        yield Static("Mode 2 -> opens window for 6 seconds", id="mode-2-static")
-        yield Static("Mode 3 -> opens window for 9 seconds", id="mode-3-static")
+            yield Button("Open", id="mode-1")
 
     @on(Button.Pressed)
     def move_window(self, event: Button.Pressed) -> None:
-        return
-
-
-"""        mode_to_execute = int(event.button.id.split("-")[1])
+        mode_to_execute = int(event.button.id.split("-")[1])
         control_window_container = self.app.query_one(ControlWindowPosition)
 
         if control_window_container.window_position == mode_to_execute:
@@ -58,32 +35,20 @@ class ManualMode(Vertical):
         if mode_to_execute == 0:
             close_window(
                 pin=CLOSE_WINDOW_PIN,
-                closing_time=control_window_container.window_position * 3,
+                closing_time=9,
             )
             control_window_container.window_position -= (
                 control_window_container.window_position
             )
             return
 
-        if mode_to_execute > control_window_container.window_position:
-            open_window(
-                pin=OPEN_WINDOW_PIN,
-                mode=mode_to_execute - control_window_container.window_position,
-            )
-            control_window_container.window_position = (
-                mode_to_execute - control_window_container.window_position
+        if mode_to_execute == 1:
+            open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
+
+            control_window_container.window_position += (
+                control_window_container.window_position
             )
             return
-
-        else:
-            close_window(
-                pin=CLOSE_WINDOW_PIN,
-                closing_time=(
-                    control_window_container.window_position - mode_to_execute
-                )
-                * 3,
-            )
-            control_window_container.window_position = 0"""
 
 
 class ModeChoose(Horizontal):
@@ -116,8 +81,7 @@ class ControlWindowPosition(Container):
     window_position: int = var(0)
     """
     window_position = 0 -> close
-    window_position = 1 -> open in mode 1
-    etc.
+    window_position = 1 -> open
     """
 
     def compose(self) -> ComposeResult:
@@ -173,46 +137,30 @@ class ComputerRoomApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.manual_mode()
-        self.set_interval(30, self.manual_mode)
+        self.auto_mode()
+        self.set_interval(30, self.auto_mode)
 
-    def manual_mode(self) -> None:
+    def auto_mode(self) -> None:
         """Method to perform automation window openning"""
         if not self.__mode_choose_container.mode_auto:
             return
 
+        mode_to_execute = calculate_window_opening(
+            temperature=self.__measurements_container.temperature,
+            humidity=self.__measurements_container.humidity,
+            co2=self.__measurements_container.co2,
+        )
 
-"""
-        mode_to_execute = calculate_window_opening()
-
-        if mode_to_execute[1] == self.window_position:
+        if mode_to_execute == self.__window_position_container.window_position:
             return
 
-        if not mode_to_execute[0]:
-            close_window(
-                pin=CLOSE_WINDOW_PIN,
-                closing_time=self.__window_position_container.window_position * 3,
-            )
-            self.__window_position_container.window_position -= (
-                self.__window_position_container.window_position
-            )
-            return
+        if mode_to_execute == 1:
+            open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
+            self.__window_position_container.window_position += 1
 
-        if mode_to_execute[1] > self.window_position:
-            open_window(
-                pin=OPEN_WINDOW_PIN, mode=mode_to_execute[1] - self.window_position
-            )
-            self.__window_position_container.window_position = (
-                mode_to_execute[1] - self.__window_position_container.window_position
-            )
-            return
-
-        else:
-            close_window(
-                pin=CLOSE_WINDOW_PIN,
-                closing_time=(self.window_position - mode_to_execute[1]) * 3,
-            )
-            self.__window_position_container.window_position = 0"""
+        if mode_to_execute == 0:
+            close_window(pin=CLOSE_WINDOW_PIN, closing_time=9)
+            self.__window_position_container.window_position -= 1
 
 
 if __name__ == "__main__":

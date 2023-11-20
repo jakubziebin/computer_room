@@ -73,7 +73,8 @@ class Measurements(Horizontal):
         yield Measurement(self.c02, name_of_value="co2", unit="ppm")
 
     def on_mount(self) -> None:
-        self.set_interval(2, self.update_displaying_values)
+        self.update_displaying_values()
+        self.set_interval(10, self.update_displaying_values)
 
     def update_displaying_values(self) -> None:
         self.query("*").remove()
@@ -90,7 +91,7 @@ class Measurements(Horizontal):
             Measurement(self.temperature, name_of_value="temperature", unit="°C")
         )
         self.mount(Measurement(self.humidity, name_of_value="humidity", unit="%"))
-        self.mount(Measurement(self.c02, name_of_value="co2", unit="ppm"))
+        self.mount(Measurement(self.co2, name_of_value="co2", unit="ppm"))
 
     @property
     def temperature(self) -> int:
@@ -101,5 +102,5 @@ class Measurements(Horizontal):
         return self.__humidity
 
     @property
-    def c02(self) -> float:
+    def co2(self) -> float:
         return 333.333
