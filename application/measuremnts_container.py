@@ -70,7 +70,7 @@ class Measurements(Horizontal):
     def compose(self) -> ComposeResult:
         yield Measurement(self.temperature, name_of_value="temperature", unit="°C")
         yield Measurement(self.humidity, name_of_value="humidity", unit="%")
-        yield Measurement(self.c02, name_of_value="co2", unit="ppm")
+        yield Measurement(self.co2, name_of_value="co2", unit="ppm")
 
     def on_mount(self) -> None:
         self.update_displaying_values()
