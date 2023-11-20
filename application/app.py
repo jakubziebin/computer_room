@@ -139,7 +139,7 @@ class ComputerRoomApp(App):
         self.__measurements_container = Measurements()
         self.__mode_choose_container = ModeChoose()
         self.__window_position_container = ControlWindowPosition(
-            id_="control-window-contaienr"
+            id_="control-window-container"
         )
 
     def compose(self) -> ComposeResult:
