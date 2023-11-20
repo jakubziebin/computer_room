@@ -5,6 +5,7 @@ from typing import Final
 from textual import on
 from textual.containers import Horizontal, Vertical, Container
 from textual.app import App, ComposeResult
+from textual.widget import Widget
 from textual.widgets import Header, Footer, Static, Button
 from textual.reactive import var
 
@@ -29,7 +30,6 @@ class ManualMode(Vertical):
         control_window_container = self.app.query_one(ControlWindowPosition)
 
         if control_window_container.window_position == mode_to_execute:
-            self.notify("The window is already in this state")
             return
 
         if mode_to_execute == 0:
@@ -40,6 +40,7 @@ class ManualMode(Vertical):
             control_window_container.window_position -= (
                 control_window_container.window_position
             )
+            control_window_container.update_displaying_value()
             return
 
         if mode_to_execute == 1:
@@ -48,6 +49,7 @@ class ManualMode(Vertical):
             control_window_container.window_position += (
                 control_window_container.window_position
             )
+            control_window_container.update_displaying_value()
             return
 
 
@@ -82,11 +84,16 @@ class ControlWindowPosition(Container):
     """
     window_position = 0 -> close
     window_position = 1 -> open
-    """
+    """ 
+    def __init__(self, *children: Widget, name: str | None = None, id: str | None = None, classes: str | None = None, disabled: bool = False) -> None:
+        super().__init__(*children, name=name, id=id, classes=classes, disabled=disabled)
+        self.__mode_display = Static(f"Window position: {self.window_position}")
 
     def compose(self) -> ComposeResult:
-        yield Static(f"Window position: {self.window_position}")
+        yield self.__mode_display
 
+    def update_displaying_value(self) -> None:
+        self.__mode_display.update(f"Window position: {self.window_position}")
 
 class ComputerRoomApp(App):
     DEFAULT_CSS = """
