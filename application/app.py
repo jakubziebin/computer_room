@@ -19,10 +19,24 @@ CLOSE_WINDOW_PIN: Final[int] = 21
 
 
 class ManualMode(Vertical):
+    def __init__(
+        self,
+        *children: Widget,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(
+            *children, name=name, id=id, classes=classes, disabled=disabled
+        )
+        self.__test = Static()
+
     def compose(self) -> ComposeResult:
         with Horizontal(id="auto-mode-choose"):
             yield Button("Close", id="mode-0")
             yield Button("Open", id="mode-1")
+        yield self.__test
 
     @on(Button.Pressed)
     def move_window(self, event: Button.Pressed) -> None:
@@ -40,10 +54,12 @@ class ManualMode(Vertical):
             control_window_container.window_position -= (
                 control_window_container.window_position
             )
+            self.__test.update(f"TEST: {mode_to_execute}")
             control_window_container.update_displaying_value()
             return
 
         if mode_to_execute == 1:
+            self.__test.update(f"TEST: {mode_to_execute}")
             open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
 
             control_window_container.window_position += (
@@ -84,9 +100,19 @@ class ControlWindowPosition(Container):
     """
     window_position = 0 -> close
     window_position = 1 -> open
-    """ 
-    def __init__(self, *children: Widget, name: str | None = None, id: str | None = None, classes: str | None = None, disabled: bool = False) -> None:
-        super().__init__(*children, name=name, id=id, classes=classes, disabled=disabled)
+    """
+
+    def __init__(
+        self,
+        *children: Widget,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(
+            *children, name=name, id=id, classes=classes, disabled=disabled
+        )
         self.__mode_display = Static(f"Window position: {self.window_position}")
 
     def compose(self) -> ComposeResult:
@@ -94,6 +120,7 @@ class ControlWindowPosition(Container):
 
     def update_displaying_value(self) -> None:
         self.__mode_display.update(f"Window position: {self.window_position}")
+
 
 class ComputerRoomApp(App):
     DEFAULT_CSS = """
