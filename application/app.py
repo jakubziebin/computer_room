@@ -42,12 +42,10 @@ class ManualMode(Vertical):
             control_window_container.window_position -= (
                 control_window_container.window_position
             )
-            self.__test.update(f"TEST: {mode_to_execute}")
             control_window_container.update_displaying_value()
             return
 
         if mode_to_execute == 1:
-            self.__test.update(f"TEST: {mode_to_execute}")
             open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
 
             control_window_container.window_position += (
