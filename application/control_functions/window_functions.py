@@ -1,10 +1,10 @@
 """File with functions to close or open window"""
-from time import sleep
+import asyncio
 
 import RPi.GPIO as GPIO
 
 
-def open_window(pin: int, openning_time: int) -> None:
+async def open_window(pin: int, openning_time: int) -> None:
     """
     Parameters
     -------------
@@ -15,7 +15,7 @@ def open_window(pin: int, openning_time: int) -> None:
 
     if isinstance(openning_time, int):
         GPIO.output(pin, GPIO.HIGH)
-        sleep(openning_time)
+        await asyncio.sleep(openning_time)
         GPIO.output(pin, GPIO.LOW)
         GPIO.cleanup()
     else:
@@ -23,7 +23,7 @@ def open_window(pin: int, openning_time: int) -> None:
         raise ValueError("Invalid time number !")
 
 
-def close_window(pin: int, closing_time: int) -> None:
+async def close_window(pin: int, closing_time: int) -> None:
     """
     Parameters
     -------------
@@ -33,7 +33,7 @@ def close_window(pin: int, closing_time: int) -> None:
     GPIO.setup(pin, GPIO.OUT)
 
     GPIO.output(pin, GPIO.HIGH)
-    sleep(closing_time)
+    await asyncio.sleep(closing_time)
     GPIO.output(pin, GPIO.LOW)
 
     GPIO.cleanup()
