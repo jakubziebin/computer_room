@@ -48,7 +48,7 @@ class ComputerRoomApp(App):
     """
 
     window_position: int = var(0)
-    auto_mode: bool = var(True)
+    mode_auto: bool = var(True)
 
     def __init__(self) -> None:
         super().__init__()
@@ -72,9 +72,9 @@ class ComputerRoomApp(App):
         self.auto_mode()
         self.set_interval(30, self.auto_mode)
 
-    def auto_mode(self) -> None:
+    async def auto_mode(self) -> None:
         """Method to perform automation window openning"""
-        if not self.auto_mode:
+        if not self.mode_auto:
             return
 
         mode_to_execute = calculate_window_opening(
@@ -87,15 +87,15 @@ class ComputerRoomApp(App):
             return
 
         if mode_to_execute == 1:
-            open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
+            await open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
             self.window_position += 1
 
         if mode_to_execute == 0:
-            close_window(pin=CLOSE_WINDOW_PIN, closing_time=9)
+            await close_window(pin=CLOSE_WINDOW_PIN, closing_time=9)
             self.window_position -= 1
 
     @on(Button.Pressed)
-    def move_window(self, event: Button.Pressed) -> None:
+    async def move_window(self, event: Button.Pressed) -> None:
         if event.button.id.split("-")[1] == "mode":
             mode_choose_container = self.app.query_one("#mode-choose-container")
             if event.button.id == "auto-mode-button":
@@ -114,7 +114,7 @@ class ComputerRoomApp(App):
             return
 
         if mode_to_execute == 0:
-            close_window(pin=CLOSE_WINDOW_PIN, closing_time=9)
+            await close_window(pin=CLOSE_WINDOW_PIN, closing_time=9)
             self.window_position -= 1
             self.app.query_one("#window-position-display").update(
                 f"Window position {self.window_position}"
@@ -122,7 +122,7 @@ class ComputerRoomApp(App):
             return
 
         if mode_to_execute == 1:
-            open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
+            await open_window(pin=OPEN_WINDOW_PIN, openning_time=9)
             self.window_position += 1
             self.app.query_one("#window-position-display").update(
                 f"Window position {self.window_position}"
