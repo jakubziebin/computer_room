@@ -56,16 +56,10 @@ class Measurements(Horizontal):
 
     def __init__(self):
         super().__init__()
-        self.__dht_values = read_dht_values(4, 17)
+        self.__dht_values = read_dht_values(4)
 
-        self.__temperature = (
-            self.__dht_values.get("temperature_4", 20)
-            + self.__dht_values.get("temperature_17", 20)
-        ) // 2
-        self.__humidity = (
-            self.__dht_values.get("humidity_4", 30)
-            + self.__dht_values.get("humidity_17", 30)
-        ) // 2
+        self.__temperature = self.__dht_values.get("temperature_4", 20)
+        self.__humidity = self.__dht_values.get("humidity_4", 30)
 
     def compose(self) -> ComposeResult:
         yield Measurement(self.temperature, name_of_value="temperature", unit="°C")
@@ -74,18 +68,14 @@ class Measurements(Horizontal):
 
     def on_mount(self) -> None:
         self.update_displaying_values()
-        self.set_interval(10, self.update_displaying_values)
+        self.set_interval(2999, self.update_displaying_values)
 
     def update_displaying_values(self) -> None:
         self.query("*").remove()
 
-        self.__dht_values = read_dht_values(4, 17)
-        self.__temperature = (
-            self.__dht_values["temperature_4"] + self.__dht_values["temperature_17"]
-        ) // 2
-        self.__humidity = (
-            self.__dht_values["humidity_4"] + self.__dht_values["humidity_17"]
-        ) // 2
+        self.__dht_values = read_dht_values(4)
+        self.__temperature = self.__dht_values["temperature_4"]
+        self.__humidity = self.__dht_values["humidity_4"]
 
         self.mount(
             Measurement(self.temperature, name_of_value="temperature", unit="°C")
