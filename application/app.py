@@ -70,7 +70,7 @@ class ComputerRoomApp(App):
 
     def on_mount(self) -> None:
         self.auto_mode()
-        self.set_interval(30, self.auto_mode)
+        self.set_interval(3000, self.auto_mode)
 
     async def auto_mode(self) -> None:
         """Method to perform automation window openning"""
