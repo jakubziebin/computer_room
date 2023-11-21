@@ -14,7 +14,7 @@ from control_functions.control_file import calculate_window_opening
 from control_functions.window_functions import open_window, close_window
 
 OPEN_WINDOW_PIN: Final[int] = 20
-CLOSE_WINDOW_PIN: Final[int] = 21
+CLOSE_WINDOW_PIN: Final[int] = 16
 
 
 class ManualMode(Vertical):
