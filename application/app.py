@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Final
-import asyncio
+from time import sleep
 
 from textual import on
 from textual.containers import Horizontal
@@ -15,7 +15,7 @@ OPEN_WINDOW_PIN: Final[int] = 20
 CLOSE_WINDOW_PIN: Final[int] = 16
 
 
-async def open_window(pin: int, openning_time: int) -> None:
+def open_window(pin: int, openning_time: int) -> None:
     """
     Parameters
     -------------
@@ -25,12 +25,12 @@ async def open_window(pin: int, openning_time: int) -> None:
     GPIO.setup(pin, GPIO.OUT)
 
     GPIO.output(pin, GPIO.HIGH)
-    await asyncio.sleep(openning_time)
+    sleep(open_window)
     GPIO.output(pin, GPIO.LOW)
     GPIO.cleanup()
 
 
-async def close_window(pin: int, closing_time: int) -> None:
+def close_window(pin: int, closing_time: int) -> None:
     """
     Parameters
     -------------
@@ -40,7 +40,7 @@ async def close_window(pin: int, closing_time: int) -> None:
     GPIO.setup(pin, GPIO.OUT)
 
     GPIO.output(pin, GPIO.HIGH)
-    await asyncio.sleep(closing_time)
+    sleep(closing_time)
     GPIO.output(pin, GPIO.LOW)
 
     GPIO.cleanup()
@@ -71,20 +71,18 @@ class ComputerRoomApp(App):
         yield Footer()
 
     @on(Button.Pressed, "#mode-0")
-    async def close_window(self, event: Button.Pressed) -> None:
+    def close_window(self, event: Button.Pressed) -> None:
         if self.window_position == 0:
             return
         self.window_position = 0
-        await asyncio.sleep(2)
-        await close_window(CLOSE_WINDOW_PIN, 9)
+        close_window(CLOSE_WINDOW_PIN, 9)
 
     @on(Button.Pressed, "#mode-1")
-    async def open_window(self, event: Button.Pressed) -> None:
+    def open_window(self, event: Button.Pressed) -> None:
         if self.window_position == 1:
             return
         self.window_position = 1
-        await asyncio.sleep(2)
-        await open_window(OPEN_WINDOW_PIN, 9)
+        open_window(OPEN_WINDOW_PIN, 9)
 
 
 if __name__ == "__main__":
