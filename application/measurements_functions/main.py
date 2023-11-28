@@ -71,6 +71,7 @@ def read_dht_values(*pins: int) -> dict[str, int] | None:
 
 
 # Dodanie obsługi przerwania na danym kanale
+GPIO.setwarnings(False)
 GPIO.add_event_detect(SENSOR_DATA_PIN, GPIO.BOTH, callback=interruptChange)
 
 try:
