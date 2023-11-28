@@ -25,7 +25,7 @@ def open_window(pin: int, openning_time: int) -> None:
     GPIO.setup(pin, GPIO.OUT)
 
     GPIO.output(pin, GPIO.HIGH)
-    sleep(open_window)
+    sleep(openning_time)
     GPIO.output(pin, GPIO.LOW)
     GPIO.cleanup()
 
